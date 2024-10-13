@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: todo
+  liquibase:
+    change-log: classpath:db/migration/V1__Create_tasks_table.sql
+  profiles:
+    active: test
+  logging:
+    level:
+      root: DEBUG
+      org.springframework.web: DEBUG
+      liquibase: DEBUG

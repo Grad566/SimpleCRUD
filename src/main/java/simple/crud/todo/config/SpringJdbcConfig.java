@@ -28,8 +28,8 @@ public class SpringJdbcConfig {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(driver);
         dataSource.setUrl(url);
-        dataSource.setPassword(username);
-        dataSource.setUsername(password);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
 
         return dataSource;
     }

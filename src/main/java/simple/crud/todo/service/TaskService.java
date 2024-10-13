@@ -1,6 +1,8 @@
 package simple.crud.todo.service;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 import simple.crud.todo.dto.TaskCreatedDTO;
 import simple.crud.todo.dto.TaskDTO;
@@ -13,6 +15,8 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Getter
+@Setter
 public class TaskService {
     private final TaskMapper taskMapper;
     private final TaskRepository taskRepository;

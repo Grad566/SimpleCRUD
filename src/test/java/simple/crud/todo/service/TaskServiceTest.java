@@ -18,8 +18,11 @@ import simple.crud.todo.repository.TaskRepository;
 import java.util.Collections;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -27,13 +30,13 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 class TaskServiceTest {
     @Mock
-    private TaskMapper taskMapper;
+    private TaskMapper taskMapper; // Мок для TaskMapper
 
     @Mock
-    private TaskRepository taskRepository;
+    private TaskRepository taskRepository; // Мок для TaskRepository
 
     @InjectMocks
-    private TaskService taskService;
+    private TaskService taskService; // Сервис, который будет тестироваться
 
     private Task task;
     private TaskDTO taskDTO;
@@ -101,16 +104,44 @@ class TaskServiceTest {
 
     @Test
     public void testUpdateById() {
-        when(taskRepository.getById(anyLong())).thenReturn(task);
-        when(taskMapper.map(task)).thenReturn(taskDTO);
+        Task task1 = new Task();
+        task1.setId(1L);
+        task1.setTitle("Test Task");
+        task1.setContent("Test Content");
 
-        taskService.updateById(taskUpdatedDTO, 1L);
+        TaskDTO taskDTO1 = new TaskDTO();
+        taskDTO1.setContent("Updated Content");
+        taskDTO1.setTitle("Updated Task");
+
+        TaskUpdatedDTO taskUpdatedDTO1 = new TaskUpdatedDTO();
+        taskUpdatedDTO1.setTitle(JsonNullable.of("Updated Task"));
+        taskUpdatedDTO1.setContent(JsonNullable.of("Updated Content"));
+
+        when(taskRepository.getById(anyLong())).thenReturn(task1);
+
+        doAnswer(invocation -> {
+            TaskUpdatedDTO dto = invocation.getArgument(0);
+            Task t = invocation.getArgument(1);
+            t.setTitle(dto.getTitle().get());
+            t.setContent(dto.getContent().get());
+            return null;
+        }).when(taskMapper).update(any(TaskUpdatedDTO.class), any(Task.class));
+
+        when(taskRepository.updateTask(task1)).thenReturn(task1);
+        when(taskMapper.map(task1)).thenReturn(taskDTO1);
+
+        TaskDTO result = taskService.updateById(taskUpdatedDTO1, 1L);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTitle()).isEqualTo("Updated Task");
+        assertThat(result.getContent()).isEqualTo("Updated Content");
 
         verify(taskRepository).getById(1L);
-        verify(taskMapper).update(taskUpdatedDTO, task);
-        verify(taskRepository).updateTask(task);
-        verify(taskMapper).map(task);
+        verify(taskMapper).update(taskUpdatedDTO1, task1);
+        verify(taskRepository).updateTask(task1);
+        verify(taskMapper).map(task1);
     }
+
 
     @Test
     public void testDeleteById() {
@@ -119,3 +150,4 @@ class TaskServiceTest {
         verify(taskRepository).deleteById(1L);
     }
 }
+

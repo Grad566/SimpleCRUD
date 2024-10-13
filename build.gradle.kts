@@ -28,7 +28,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.liquibase:liquibase-core")
-	runtimeOnly("org.postgresql:postgresql")
+	implementation("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -40,6 +40,9 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-cache")
 
 	implementation("com.h2database:h2")
+
+	testImplementation("org.testcontainers:testcontainers:1.17.3")
+	testImplementation("org.testcontainers:postgresql:1.17.3")
 }
 
 tasks.withType<Test> {

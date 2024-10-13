@@ -27,7 +27,7 @@ public class TaskRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("tasks")
-                .usingGeneratedKeyColumns("ID");
+                .usingGeneratedKeyColumns("id");
         this.taskRowMapper = taskRowMapper;
     }
 

@@ -43,6 +43,8 @@ dependencies {
 
 	testImplementation("org.testcontainers:testcontainers:1.17.3")
 	testImplementation("org.testcontainers:postgresql:1.17.3")
+
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
 }
 
 tasks.withType<Test> {

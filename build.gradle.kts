@@ -45,6 +45,8 @@ dependencies {
 	testImplementation("org.testcontainers:postgresql:1.17.3")
 
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
+
+	implementation("org.hibernate.orm:hibernate-core:6.6.1.Final")
 }
 
 tasks.withType<Test> {

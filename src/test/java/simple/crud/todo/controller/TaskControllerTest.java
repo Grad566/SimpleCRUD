@@ -42,9 +42,6 @@ class TaskControllerTest {
     @Autowired
     private ObjectMapper om;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     private static PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest")
             .withDatabaseName("springjdbc")
             .withUsername("admin")
@@ -56,12 +53,10 @@ class TaskControllerTest {
         registry.add("spring.datasource.url", postgresContainer::getJdbcUrl);
         registry.add("spring.datasource.username", postgresContainer::getUsername);
         registry.add("spring.datasource.password", postgresContainer::getPassword);
-    }
 
-        @BeforeEach
-    public void setUp() {
-        jdbcTemplate.execute("DROP TABLE IF EXISTS tasks;");
-        jdbcTemplate.execute("CREATE TABLE tasks (id BIGSERIAL PRIMARY KEY, title VARCHAR(255) NOT NULL UNIQUE, content TEXT);");
+        registry.add("hibernate.url", postgresContainer::getJdbcUrl);
+        registry.add("hibernate.username", postgresContainer::getUsername);
+        registry.add("hibernate.password", postgresContainer::getPassword);
     }
 
     @Test

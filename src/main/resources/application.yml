@@ -10,3 +10,13 @@ spring:
       root: DEBUG
       org.springframework.web: DEBUG
       liquibase: DEBUG
+hibernate:
+  connection:
+    url: jdbc:postgresql://db:5432/springjdbc
+    username: admin
+    password: qwerty
+  show_sql: true
+  format_sql: true
+  highlight_sql: true
+  hbm2ddl:
+    auto: create

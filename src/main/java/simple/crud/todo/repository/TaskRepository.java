@@ -1,6 +1,9 @@
 package simple.crud.todo.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -18,64 +21,77 @@ import java.util.Map;
 @Repository
 @RequiredArgsConstructor
 public class TaskRepository {
-    private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert jdbcInsert;
-    private final TaskRowMapper taskRowMapper;
-
-    @Autowired
-    public TaskRepository(JdbcTemplate jdbcTemplate, TaskRowMapper taskRowMapper) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("tasks")
-                .usingGeneratedKeyColumns("id");
-        this.taskRowMapper = taskRowMapper;
-    }
-
+    private final SessionFactory sessionFactory;
 
     public Task save(Task task) {
-        Map<String, String> params = new HashMap<>();
-        params.put("title", task.getTitle());
-        params.put("content", task.getContent());
-
-        Number id = jdbcInsert.executeAndReturnKey(params);
-        task.setId((Long) id);
-
+        Transaction transaction = null;
+        try(Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+            session.persist(task);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw e;
+        }
         return task;
     }
 
     @Cacheable(value = "tasks", key = "#id")
     public Task getById(Long id) {
-        String sql = "SELECT * FROM tasks WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, taskRowMapper, id);
+        try(Session session = sessionFactory.openSession()) {
+            return session.get(Task.class, id);
+        }
     }
 
     @Cacheable(value = "tasks")
     public List<Task> getAll() {
-        String sql = "SELECT * FROM tasks";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Task task = new Task();
-            task.setId(rs.getLong("id"));
-            task.setTitle(rs.getString("title"));
-            task.setContent(rs.getString("content"));
-            return task;
-        });
+        try(Session session = sessionFactory.openSession()) {
+            return session.createQuery("FROM Tasks", Task.class).list();
+        }
     }
 
     @CachePut(value = "tasks", key = "#updatedTask.id")
     public Task updateTask(Task updatedTask) {
-        String sql = "UPDATE tasks SET title = ?, content = ? WHERE id = ?";
-        jdbcTemplate.update(sql, updatedTask.getTitle(), updatedTask.getContent(), updatedTask.getId());
+        Transaction transaction = null;
+        try(Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+            session.merge(updatedTask);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw e;
+        }
+
         return updatedTask;
     }
 
     @CacheEvict(value = "tasks", key = "#id")
     public void deleteById(Long id) {
-        String sql = "DELETE FROM tasks WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        Transaction transaction = null;
+        try(Session session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+            Task task = session.get(Task.class, id);
+            if (task != null) {
+                session.remove(task);
+            }
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw e;
+        }
     }
 
     public Task getByTaskName(String name) {
-        String sql = "SELECT * FROM tasks WHERE title = ?";
-        return jdbcTemplate.queryForObject(sql, taskRowMapper, name);
+        try(Session session = sessionFactory.openSession()) {
+            return session.createQuery("FROM Tasks WHERE title = :title", Task.class)
+                    .setParameter("title", name)
+                    .uniqueResult();
+        }
     }
 }

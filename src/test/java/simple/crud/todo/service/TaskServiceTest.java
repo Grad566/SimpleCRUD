@@ -30,13 +30,13 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 class TaskServiceTest {
     @Mock
-    private TaskMapper taskMapper; // Мок для TaskMapper
+    private TaskMapper taskMapper;
 
     @Mock
-    private TaskRepository taskRepository; // Мок для TaskRepository
+    private TaskRepository taskRepository;
 
     @InjectMocks
-    private TaskService taskService; // Сервис, который будет тестироваться
+    private TaskService taskService;
 
     private Task task;
     private TaskDTO taskDTO;

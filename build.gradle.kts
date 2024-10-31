@@ -26,11 +26,9 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.liquibase:liquibase-core")
 	implementation("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation("io.projectreactor:reactor-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
 	implementation("org.mapstruct:mapstruct:1.6.0.Beta2")
@@ -47,6 +45,9 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
 
 	implementation("org.hibernate.orm:hibernate-core:6.6.1.Final")
+
+	implementation("org.springframework:spring-orm:6.1.14")
+
 }
 
 tasks.withType<Test> {

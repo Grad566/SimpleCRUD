@@ -4,19 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import simple.crud.todo.mapper.TaskRowMapper;
 import simple.crud.todo.model.Task;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -48,7 +42,7 @@ public class TaskRepository {
     @Cacheable(value = "tasks")
     public List<Task> getAll() {
         try(Session session = sessionFactory.openSession()) {
-            return session.createQuery("FROM Tasks", Task.class).list();
+            return session.createQuery("FROM Task", Task.class).list();
         }
     }
 
@@ -89,7 +83,7 @@ public class TaskRepository {
 
     public Task getByTaskName(String name) {
         try(Session session = sessionFactory.openSession()) {
-            return session.createQuery("FROM Tasks WHERE title = :title", Task.class)
+            return session.createQuery("FROM Task WHERE title = :title", Task.class)
                     .setParameter("title", name)
                     .uniqueResult();
         }

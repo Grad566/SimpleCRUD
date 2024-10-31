@@ -1,14 +1,12 @@
 package simple.crud.todo.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -42,9 +40,6 @@ class TaskControllerTest {
     @Autowired
     private ObjectMapper om;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     private static PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest")
             .withDatabaseName("springjdbc")
             .withUsername("admin")
@@ -58,11 +53,6 @@ class TaskControllerTest {
         registry.add("spring.datasource.password", postgresContainer::getPassword);
     }
 
-        @BeforeEach
-    public void setUp() {
-        jdbcTemplate.execute("DROP TABLE IF EXISTS tasks;");
-        jdbcTemplate.execute("CREATE TABLE tasks (id BIGSERIAL PRIMARY KEY, title VARCHAR(255) NOT NULL UNIQUE, content TEXT);");
-    }
 
     @Test
     public void testGetAll() throws Exception {
@@ -93,7 +83,7 @@ class TaskControllerTest {
 
         mockMvc.perform(request).andExpect(status().isCreated());
 
-        Task task = taskRepository.getByTaskName(data.getTitle());
+        Task task = taskRepository.findByTitle(data.getTitle()).get();
 
         assertNotNull(task);
         assertThat(task.getTitle()).isEqualTo(data.getTitle());
@@ -117,7 +107,7 @@ class TaskControllerTest {
 
         mockMvc.perform(request);
 
-        Task updatedTask = taskRepository.getById(task.getId());
+        Task updatedTask = taskRepository.findById(task.getId()).get();
 
         assertNotNull(updatedTask);
         assertThat(updatedTask.getContent()).isEqualTo(data.getContent().get());

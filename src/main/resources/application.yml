@@ -10,3 +10,12 @@ spring:
       root: DEBUG
       org.springframework.web: DEBUG
       liquibase: DEBUG
+  jpa:
+    generate-ddl: true
+    show-sql: true
+    open-in-view: false
+    output:
+      ansi:
+        enabled: always
+    hibernate:
+      ddl-auto: update

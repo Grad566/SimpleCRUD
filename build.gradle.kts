@@ -30,7 +30,6 @@ dependencies {
 	implementation("org.liquibase:liquibase-core")
 	implementation("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation("io.projectreactor:reactor-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
 	implementation("org.mapstruct:mapstruct:1.6.0.Beta2")

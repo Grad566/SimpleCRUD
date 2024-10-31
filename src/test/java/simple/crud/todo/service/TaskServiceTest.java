@@ -17,6 +17,7 @@ import simple.crud.todo.repository.TaskRepository;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -65,26 +66,26 @@ class TaskServiceTest {
 
     @Test
     public void testGetAll() {
-        when(taskRepository.getAll()).thenReturn(Collections.singletonList(task));
+        when(taskRepository.findAll()).thenReturn(Collections.singletonList(task));
         when(taskMapper.map(task)).thenReturn(taskDTO);
 
         List<TaskDTO> result = taskService.getAll();
 
         assertEquals(1, result.size());
         assertEquals(taskDTO, result.get(0));
-        verify(taskRepository).getAll();
+        verify(taskRepository).findAll();
         verify(taskMapper).map(task);
     }
 
     @Test
     public void testGetById() {
-        when(taskRepository.getById(anyLong())).thenReturn(task);
+        when(taskRepository.findById(anyLong())).thenReturn(Optional.of(task));
         when(taskMapper.map(task)).thenReturn(taskDTO);
 
         TaskDTO result = taskService.getById(1L);
 
         assertEquals(taskDTO, result);
-        verify(taskRepository).getById(1L);
+        verify(taskRepository).findById(1L);
         verify(taskMapper).map(task);
     }
 
@@ -110,14 +111,14 @@ class TaskServiceTest {
         task1.setContent("Test Content");
 
         TaskDTO taskDTO1 = new TaskDTO();
-        taskDTO1.setContent("Updated Content");
         taskDTO1.setTitle("Updated Task");
+        taskDTO1.setContent("Updated Content");
 
         TaskUpdatedDTO taskUpdatedDTO1 = new TaskUpdatedDTO();
         taskUpdatedDTO1.setTitle(JsonNullable.of("Updated Task"));
         taskUpdatedDTO1.setContent(JsonNullable.of("Updated Content"));
 
-        when(taskRepository.getById(anyLong())).thenReturn(task1);
+        when(taskRepository.findById(anyLong())).thenReturn(Optional.of(task1));
 
         doAnswer(invocation -> {
             TaskUpdatedDTO dto = invocation.getArgument(0);
@@ -127,7 +128,7 @@ class TaskServiceTest {
             return null;
         }).when(taskMapper).update(any(TaskUpdatedDTO.class), any(Task.class));
 
-        when(taskRepository.updateTask(task1)).thenReturn(task1);
+        when(taskRepository.save(task1)).thenReturn(task1);
         when(taskMapper.map(task1)).thenReturn(taskDTO1);
 
         TaskDTO result = taskService.updateById(taskUpdatedDTO1, 1L);
@@ -136,9 +137,9 @@ class TaskServiceTest {
         assertThat(result.getTitle()).isEqualTo("Updated Task");
         assertThat(result.getContent()).isEqualTo("Updated Content");
 
-        verify(taskRepository).getById(1L);
+        verify(taskRepository).findById(1L);
         verify(taskMapper).update(taskUpdatedDTO1, task1);
-        verify(taskRepository).updateTask(task1);
+        verify(taskRepository).save(task1);
         verify(taskMapper).map(task1);
     }
 

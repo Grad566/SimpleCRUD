@@ -16,14 +16,14 @@ import simple.crud.todo.dto.TaskCreatedDTO;
 import simple.crud.todo.dto.TaskDTO;
 import simple.crud.todo.dto.TaskUpdatedDTO;
 import simple.crud.todo.service.TaskService;
+import simple.crud.todo.swagger.TaskEndpointDocumentation;
 
 import java.util.List;
 
-@Tag(name = "Контроллер задач", description = "CRUD для сущности task")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/api/tasks")
-public class TaskController {
+public class TaskController implements TaskEndpointDocumentation {
     private final TaskService taskService;
 
     @GetMapping
